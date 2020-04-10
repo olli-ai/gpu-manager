@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gpu-manager-config
+data:
+  volume.conf: |-
+    {
+      "volume": [
+      {{- $binaries := list "gpu-client" }}
+      {{- $libraries := list "libcuda-control.so" }}
+      {{- range _, $package := .Values.nvidia.packages }}
+        {{- if $package.installed }}
+          {{- if $package.binaries }}
+            {{- $binaries = concat $binaries $package.binaries }}
+          {{- end }}
+          {{- if $package.libraries }}
+            {{- $libraries = concat $libraries $package.libraries }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+        {
+          "name": "nvidia",
+          "base": "/etc/gpu-manager/vdriver",
+          "mode": "ro",
+          "components": {
+            "binaries": {{ $binaries | toPrettyJson | indent 12 | trim }},
+            "libraries": {{ $libraries | toPrettyJson | indent 12 | trim }}
+          }
+        },
+      {{- $binaries := list }}
+      {{- $libraries := list" }}
+      {{- range _, $package := .Values.nvidia.packages }}
+        {{- if $package.installed }}
+          {{- if $package.binaries }}
+            {{- $binaries = concat $binaries $package.binaries }}
+          {{- end }}
+          {{- if $package.libraries }}
+            {{- $libraries = concat $libraries $package.libraries }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+        {
+          "name": "origin",
+          "base": "/etc/gpu-manager/vdriver",
+          "mode": "ro",
+          "components": {
+            "binaries": {{ $binaries | toPrettyJson | indent 12 | trim }},
+            "libraries": {{ $libraries | toPrettyJson | indent 12 | trim }}
+          }
+        }
+      ]
+    }
+{{- if .Values.config }}
+  extra-config.json: {{ .Values.config | toJson | quote }}
+{{- else }}
+  extra-config.json: "{}"
+{{- end }}

@@ -44,13 +44,18 @@ canary:
   host: acme.com
 
 service:
-  name: gpu-manager
   type: ClusterIP
-  externalPort: 80
-  internalPort: 8080
+  externalPort: 5678
+  internalPort: 5678
   annotations:
     fabric8.io/expose: "true"
-    fabric8.io/ingress.annotations: "kubernetes.io/ingress.class: nginx"
+    fabric8.io/ingress.annotations: |-
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/auth-url: https://auth.jenkins-x1.iviet.com/oauth2/auth
+      nginx.ingress.kubernetes.io/auth-signin: https://auth.jenkins-x1.iviet.com/oauth2/start?rd=https%3A%2F%2F$http_host$escaped_request_uri
+
+podAnnotations:
+  reloader.stakater.com/auto: "true"
 resources:
   limits:
     cpu: 100m
@@ -93,3 +98,104 @@ jxRequirements:
     # shared ingress annotations on all services
     annotations:
     #  kubernetes.io/ingress.class: nginx
+
+nvidia:
+  packages:
+    # libraries mentioned in original but not found
+  - name: unkown
+    installed: false
+    libraries:
+    - libnvidia-egl-wayland.so
+    # NVIDIA CUDA development toolkit
+  - name: nvidia-cuda-toolkit
+    installed: true # in original
+    libraries:
+    - libEGL.so
+    - libGL.so
+    - libGLX.so
+    - libGLESv1_CM.so
+    - libGLESv2.so
+    - libGLdispatch.so
+    - libvdpau_nvidia.so
+    # NVIDIA libcompute package
+  - name: libnvidia-compute-440
+    installed: true # dependency of nvidia-cuda-toolkit
+    libraries:
+    - libcuda.so
+    - libnvidia-compiler.so
+    - libnvidia-fatbinaryloader.so
+    - libnvidia-ml.so
+    - libnvidia-opencl.so
+    - libnvidia-ptxjitcompiler.so
+    # NVIDIA driver support binaries
+  - name: nvidia-utils-440
+    installed: true # in original
+    binaries:
+    - nvidia-debugdump
+    - nvidia-smi
+    # NVIDIA compute utilities
+  - name: nvidia-compute-utils-440
+    installed: true # in original
+    binaries:
+    - nvidia-cuda-mps-control
+    - nvidia-cuda-mps-server
+    - nvidia-persistenced
+    # NVIDIA binary OpenGL/GLX configuration library
+  - name: libnvidia-cfg1-440
+    installed: false # not in original
+    libraries:
+    - libnvidia-cfg.so
+    # Shared files used by the NVIDIA libraries
+  - name: libnvidia-common-440
+    installed: false # not in original
+    # NVIDIA Video Decoding runtime libraries
+  - name: libnvidia-decode-440
+    installed: false # in original
+    libraries:
+    - libnvcuvid.so
+    - libnvidia-opticalflow.so
+    # NVENC Video Encoding runtime library
+  - name: libnvidia-encode-440
+    installed: false # in original
+    libraries:
+    - libnvidia-encode.so
+    # Extra libraries for the NVIDIA driver
+  - name: libnvidia-extra-440
+    installed: false # not in original
+    libraries:
+    - libnvidia-allocator.so
+    # NVIDIA OpenGL-based Framebuffer Capture runtime library
+  - name: libnvidia-fbc1-440
+    installed: false # in original
+    libraries:
+    - libnvidia-fbc.so
+    # NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
+  - name: libnvidia-gl-440
+    installed: false # in original
+    libraries:
+    - libEGL_nvidia.so
+    - libGLESv1_CM_nvidia.so
+    - libGLESv2_nvidia.so
+    - libGLX_nvidia.so
+    # - libnvidia-cbl.so # not in original
+    - libnvidia-eglcore.so
+    - libnvidia-glcore.so
+    - libnvidia-glsi.so
+    # - libnvidia-glvkspirv.so # not in original
+    # - libnvidia-rtcore.so # not in original
+    - libnvidia-tls.so
+    # - libnvoptix.so # not in original
+    # NVIDIA OpenGL-based Inband Frame Readback runtime library
+  - name: libnvidia-ifr1-440
+    installed: false # in original
+    libraries:
+    - libnvidia-ifr.so
+    # NVIDIA kernel source package
+  - name: nvidia-kernel-source-440
+    installed: false # not in original
+  - name: nvidia-kernel-common-440
+    installed: false # not in original
+  - name: nvidia-dkms-440
+    installed: false # not in original
+  - name: nvidia-kernel-source-440
+    installed: false # not in original

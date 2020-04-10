@@ -1,0 +1,3 @@
+[submodule "vcuda-controller"]
+	path = vcuda-controller
+	url = https://github.com/olli-ai/vcuda-controller/
