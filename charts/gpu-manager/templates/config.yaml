@@ -8,13 +8,17 @@ data:
       "volume": [
       {{- $binaries := list "gpu-client" }}
       {{- $libraries := list "libcuda-control.so" }}
-      {{- range _, $package := .Values.nvidia.packages }}
+      {{- range $index, $package := .Values.nvidia.packages }}
         {{- if $package.installed }}
           {{- if $package.binaries }}
-            {{- $binaries = concat $binaries $package.binaries }}
+            {{- range $index, $binary := $package.binaries -}}
+              {{- $binaries = append $binaries $binary }}
+            {{- end }}
           {{- end }}
           {{- if $package.libraries }}
-            {{- $libraries = concat $libraries $package.libraries }}
+            {{- range $index, $library := $package.libraries -}}
+              {{- $libraries = append $libraries $library }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
@@ -28,14 +32,18 @@ data:
           }
         },
       {{- $binaries := list }}
-      {{- $libraries := list" }}
-      {{- range _, $package := .Values.nvidia.packages }}
+      {{- $libraries := list }}
+      {{- range $index, $package := .Values.nvidia.packages }}
         {{- if $package.installed }}
           {{- if $package.binaries }}
-            {{- $binaries = concat $binaries $package.binaries }}
+            {{- range $index, $binary := $package.binaries -}}
+              {{- $binaries = append $binaries $binary }}
+            {{- end }}
           {{- end }}
           {{- if $package.libraries }}
-            {{- $libraries = concat $libraries $package.libraries }}
+            {{- range $index, $library := $package.libraries -}}
+              {{- $libraries = append $libraries $library }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
