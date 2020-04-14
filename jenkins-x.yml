@@ -25,3 +25,8 @@ pipelineConfig:
         - --namespace
         - kube-system
         dir: /workspace/source/charts/gpu-manager
+    release:
+      setup:
+        steps:
+        - command: git submodule update --init
+          name: git-submodule
