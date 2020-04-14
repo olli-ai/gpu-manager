@@ -137,6 +137,8 @@ func (m *managerImpl) Run() error {
 		clientCfg *rest.Config
 	)
 	if !m.config.Standalone {
+		var err error
+
 		if !m.config.InClusterMode {
 			clientCfg, err = clientcmd.BuildConfigFromFlags("", m.config.KubeConfig)
 		} else {
