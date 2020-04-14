@@ -9,8 +9,16 @@ RUN apt install -y gcc-6 nvidia-cuda-toolkit nvidia-utils-440 nvidia-compute-uti
 
 WORKDIR /build
 
+# install go 1.13
+RUN apt install -y curl build-essential
+RUN curl https://dl.google.com/go/go1.13.10.linux-amd64.tar.gz | tar xz
+RUN mv go /usr/local/go
+ENV GOPATH=/build/.go
+RUN ln -s /usr/local/go/bin/* /usr/local/bin/
+
+WORKDIR /build
+
 # install libcuda-controller.so
-RUN apt install -y build-essential
 COPY vcuda-controller/include include
 COPY vcuda-controller/src src
 COPY vcuda-controller/tools tools
@@ -22,13 +30,6 @@ WORKDIR /
 RUN rm -rf /build
 
 WORKDIR /build
-
-# install go 1.13
-RUN apt install -y curl gcc
-RUN curl https://dl.google.com/go/go1.13.10.linux-amd64.tar.gz | tar xz
-RUN mv go /usr/local/go
-ENV GOPATH=/build/.go
-RUN ln -s /usr/local/go/bin/* /usr/local/bin/
 
 # download go dependencies
 COPY go.mod go.sum ./

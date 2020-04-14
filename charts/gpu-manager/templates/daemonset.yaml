@@ -20,8 +20,6 @@ spec:
       labels:
         draft: {{ default "draft-app" .Values.draft }}
         app: gpu-manager
-      annotations:
-{{ toYaml .Values.podAnnotations | indent 8 }}
     spec:
       # only run node hash gpu device
       nodeSelector:

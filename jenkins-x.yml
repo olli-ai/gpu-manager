@@ -1,1 +1,27 @@
 buildPack: go
+pipelineConfig:
+  pipelines:
+    overrides:
+    - pipeline: pullRequest
+      stage: build
+      name: make-linux
+    - pipeline: release
+      stage: build
+      name: make-build
+    - pipeline: release
+      stage: promote
+      name: jx-promote
+      steps:
+      - name: install
+        command: jx
+        args:
+        - step
+        - helm
+        - apply
+        - --boot
+        # - --remote
+        - --name
+        - gpu-manager
+        - --namespace
+        - kube-system
+        dir: /workspace/source/charts/gpu-manager
