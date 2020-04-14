@@ -45,7 +45,7 @@ import (
 	"tkestack.io/gpu-manager/pkg/types"
 	"tkestack.io/gpu-manager/pkg/utils"
 
-	systemd "github.com/coreos/go-systemd/daemon"
+	// systemd "github.com/coreos/go-systemd/daemon"
 	"github.com/golang/glog"
 	google_protobuf1 "github.com/golang/protobuf/ptypes/empty"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -123,14 +123,14 @@ func (m *managerImpl) Run() error {
 		}
 	}
 
-	sent, err := systemd.SdNotify(true, "READY=1\n")
-	if err != nil {
-		glog.Errorf("Unable to send systemd daemon successful start message: %v\n", err)
-	}
+	// sent, err := systemd.SdNotify(true, "READY=1\n")
+	// if err != nil {
+	// 	glog.Errorf("Unable to send systemd daemon successful start message: %v\n", err)
+	// }
 
-	if !sent {
-		glog.Errorf("Unable to set Type=notify in systemd service file?")
-	}
+	// if !sent {
+	// 	glog.Errorf("Unable to set Type=notify in systemd service file?")
+	// }
 
 	var (
 		client    *kubernetes.Clientset

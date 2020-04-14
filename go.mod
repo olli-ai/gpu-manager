@@ -27,7 +27,6 @@ replace (
 )
 
 require (
-	github.com/coreos/go-systemd v0.0.0-20180511133405-39ca1b05acc7
 	github.com/docker/docker v0.7.3-0.20190327010347-be7ac8be2ae0
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
