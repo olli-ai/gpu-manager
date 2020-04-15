@@ -51,7 +51,7 @@ spec:
         ports:
         - containerPort: {{ .Values.service.internalPort }}
         command:
-        - sh
+        - bash
         - -c
         - >
           gpu-manager

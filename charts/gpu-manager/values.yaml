@@ -69,8 +69,8 @@ nvidia:
     - libGLdispatch.so
     - libvdpau_nvidia.so
     # NVIDIA libcompute package
-  - name: libnvidia-compute-440
-    installed: true # dependency of nvidia-cuda-toolkit
+  - name: libnvidia-compute-418
+    installed: true # in original
     libraries:
     - libcuda.so
     - libnvidia-compiler.so
@@ -79,49 +79,49 @@ nvidia:
     - libnvidia-opencl.so
     - libnvidia-ptxjitcompiler.so
     # NVIDIA driver support binaries
-  - name: nvidia-utils-440
+  - name: nvidia-utils-418
     installed: true # in original
     binaries:
     - nvidia-debugdump
     - nvidia-smi
     # NVIDIA compute utilities
-  - name: nvidia-compute-utils-440
+  - name: nvidia-compute-utils-418
     installed: true # in original
     binaries:
     - nvidia-cuda-mps-control
     - nvidia-cuda-mps-server
     - nvidia-persistenced
     # NVIDIA binary OpenGL/GLX configuration library
-  - name: libnvidia-cfg1-440
+  - name: libnvidia-cfg1-418
     installed: false # not in original
     libraries:
     - libnvidia-cfg.so
     # Shared files used by the NVIDIA libraries
-  - name: libnvidia-common-440
+  - name: libnvidia-common-418
     installed: false # not in original
     # NVIDIA Video Decoding runtime libraries
-  - name: libnvidia-decode-440
+  - name: libnvidia-decode-418
     installed: false # in original
     libraries:
     - libnvcuvid.so
     - libnvidia-opticalflow.so
     # NVENC Video Encoding runtime library
-  - name: libnvidia-encode-440
+  - name: libnvidia-encode-418
     installed: false # in original
     libraries:
     - libnvidia-encode.so
     # Extra libraries for the NVIDIA driver
-  - name: libnvidia-extra-440
+  - name: libnvidia-extra-418
     installed: false # not in original
     libraries:
     - libnvidia-allocator.so
     # NVIDIA OpenGL-based Framebuffer Capture runtime library
-  - name: libnvidia-fbc1-440
+  - name: libnvidia-fbc1-418
     installed: false # in original
     libraries:
     - libnvidia-fbc.so
     # NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
-  - name: libnvidia-gl-440
+  - name: libnvidia-gl-418
     installed: false # in original
     libraries:
     - libEGL_nvidia.so
@@ -137,16 +137,16 @@ nvidia:
     - libnvidia-tls.so
     # - libnvoptix.so # not in original
     # NVIDIA OpenGL-based Inband Frame Readback runtime library
-  - name: libnvidia-ifr1-440
+  - name: libnvidia-ifr1-418
     installed: false # in original
     libraries:
     - libnvidia-ifr.so
     # NVIDIA kernel source package
-  - name: nvidia-kernel-source-440
+  - name: nvidia-kernel-source-418
     installed: false # not in original
-  - name: nvidia-kernel-common-440
+  - name: nvidia-kernel-common-418
     installed: false # not in original
-  - name: nvidia-dkms-440
+  - name: nvidia-dkms-418
     installed: false # not in original
-  - name: nvidia-kernel-source-440
+  - name: nvidia-kernel-source-418
     installed: false # not in original
