@@ -1,7 +1,7 @@
 
 .PHONY: build
 build:
-	docker built . -t ubuntu:18.04-cuda-gcsfuse
+	docker build . -t ubuntu:18.04-cuda-gcsfuse
 
 .PHONY: push
 push: build
