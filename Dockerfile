@@ -2,14 +2,15 @@ FROM ubuntu:18.04
 
 RUN apt update
 
-# # get ready to mount /usr/local/nvidia
-# RUN echo "/usr/local/nvidia/lib64" > /etc/ld.so.conf.d/nvidia.conf
-# ENV PATH="/usr/local/nvidia/bin:${PATH}"
+# get ready to mount /usr/local/nvidia
+RUN echo "/usr/local/nvidia/lib64" > /etc/ld.so.conf.d/nvidia.conf
+ENV PATH="/usr/local/nvidia/bin:${PATH}"
 
 # install cuda toolkit
 RUN apt install -y apt-utils software-properties-common
 RUN add-apt-repository -y ppa:graphics-drivers/ppa
-RUN apt install -y gcc-6 nvidia-cuda-toolkit nvidia-utils-440 nvidia-compute-utils-440
+# RUN apt install -y gcc-6 nvidia-cuda-toolkit nvidia-utils-440 nvidia-compute-utils-440
+RUN apt install -y nvidia-cuda-toolkit
 
 WORKDIR /build
 
