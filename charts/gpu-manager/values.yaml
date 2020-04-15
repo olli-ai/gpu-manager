@@ -15,11 +15,12 @@ service:
   externalPort: 5678
   internalPort: 5678
   annotations:
-    fabric8.io/expose: "true"
-    fabric8.io/ingress.annotations: |-
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/auth-url: https://auth.jenkins-x1.iviet.com/oauth2/auth
-      nginx.ingress.kubernetes.io/auth-signin: https://auth.jenkins-x1.iviet.com/oauth2/start?rd=https%3A%2F%2F$http_host$escaped_request_uri
+    # fabric8.io/expose: "true"
+    # fabric8.io/ingress.annotations: |-
+    #   kubernetes.io/ingress.class: nginx
+    #   nginx.ingress.kubernetes.io/backend-protocol: GRPC
+    #   nginx.ingress.kubernetes.io/auth-url: https://auth.jenkins-x1.iviet.com/oauth2/auth
+    #   nginx.ingress.kubernetes.io/auth-signin: https://auth.jenkins-x1.iviet.com/oauth2/start?rd=https%3A%2F%2F$http_host$escaped_request_uri
 
 podAnnotations:
   reloader.stakater.com/auto: "true"
