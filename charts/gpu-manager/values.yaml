@@ -44,109 +44,46 @@ readinessProbe:
   timeoutSeconds: 1
 
 nvidia:
-  # All the ubuntu packages that can be installed,
-  # and the binaries and libraries provided
-  # The original repo was transfering many libraries
-  # most of them are useless for us
-  # Set "installed: true" for packages installed in the Dockerfile
-  # to transfer those libraries too
-  packages:
-    # libraries mentioned in original but not found in any package
-  - name: unkown
-    installed: false
-    libraries:
-      # installed from https://github.com/NVIDIA/egl-wayland ?
-    - libnvidia-egl-wayland.so
-    # NVIDIA CUDA development toolkit
-  - name: nvidia-cuda-toolkit
-    installed: true # in original
-    libraries:
-    - libEGL.so
-    - libGL.so
-    - libGLX.so
-    - libGLESv1_CM.so
-    - libGLESv2.so
-    - libGLdispatch.so
-    - libvdpau_nvidia.so
-    # NVIDIA libcompute package
-  - name: libnvidia-compute-440
-    installed: true # in original
-    libraries:
-    - libcuda.so
-    - libnvidia-compiler.so
-    - libnvidia-fatbinaryloader.so
-    - libnvidia-ml.so
-    - libnvidia-opencl.so
-    - libnvidia-ptxjitcompiler.so
-    # NVIDIA driver support binaries
-  - name: nvidia-utils-440
-    installed: true # in original
-    binaries:
-    - nvidia-debugdump
-    - nvidia-smi
-    # NVIDIA compute utilities
-  - name: nvidia-compute-utils-440
-    installed: true # in original
+  # stuffs installed by nvidia-driver-installer that we want to transfer
+  origin:
     binaries:
     - nvidia-cuda-mps-control
     - nvidia-cuda-mps-server
+    - nvidia-debugdump
     - nvidia-persistenced
-    # NVIDIA binary OpenGL/GLX configuration library
-  - name: libnvidia-cfg1-440
-    installed: false # not in original
+    - nvidia-smi
     libraries:
-    - libnvidia-cfg.so
-    # Shared files used by the NVIDIA libraries
-  - name: libnvidia-common-440
-    installed: false # not in original
-    # NVIDIA Video Decoding runtime libraries
-  - name: libnvidia-decode-440
-    installed: false # in original
-    libraries:
-    - libnvcuvid.so
-    - libnvidia-opticalflow.so
-    # NVENC Video Encoding runtime library
-  - name: libnvidia-encode-440
-    installed: false # in original
-    libraries:
+    - libnvidia-ml.so
+    - libcuda.so
+    - libnvidia-ptxjitcompiler.so
+    - libnvidia-fatbinaryloader.so
+    - libnvidia-opencl.so
+    - libnvidia-compiler.so
+    - libvdpau_nvidia.so
     - libnvidia-encode.so
-    # Extra libraries for the NVIDIA driver
-  - name: libnvidia-extra-440
-    installed: false # not in original
-    libraries:
-    - libnvidia-allocator.so
-    # NVIDIA OpenGL-based Framebuffer Capture runtime library
-  - name: libnvidia-fbc1-440
-    installed: false # in original
-    libraries:
+    - libnvcuvid.so
     - libnvidia-fbc.so
-    # NVIDIA OpenGL/GLX/EGL/GLES GLVND libraries and Vulkan ICD
-  - name: libnvidia-gl-440
-    installed: false # in original
-    libraries:
-    - libEGL_nvidia.so
-    - libGLESv1_CM_nvidia.so
-    - libGLESv2_nvidia.so
-    - libGLX_nvidia.so
-    # - libnvidia-cbl.so # not in original
-    - libnvidia-eglcore.so
-    - libnvidia-glcore.so
-    - libnvidia-glsi.so
-    # - libnvidia-glvkspirv.so # not in original
-    # - libnvidia-rtcore.so # not in original
-    - libnvidia-tls.so
-    # - libnvoptix.so # not in original
-    # NVIDIA OpenGL-based Inband Frame Readback runtime library
-  - name: libnvidia-ifr1-440
-    installed: false # in original
-    libraries:
     - libnvidia-ifr.so
-    # NVIDIA kernel source package
-  - name: nvidia-kernel-source-440
-    installed: false # not in original
-  - name: nvidia-kernel-common-440
-    installed: false # not in original
-  - name: nvidia-dkms-440
-    installed: false # not in original
-  - name: nvidia-kernel-source-440
-    installed: false # not in original
+    - libGL.so
+    - libGLX.so
+    - libOpenGL.so
+    - libGLESv1_CM.so
+    - libGLESv2.so
+    - libEGL.so
+    - libGLdispatch.so
+    - libGLX_nvidia.so
+    - libEGL_nvidia.so
+    - libGLESv2_nvidia.so
+    - libGLESv1_CM_nvidia.so
+    - libnvidia-eglcore.so
+    - libnvidia-egl-wayland.so
+    - libnvidia-glcore.so
+    - libnvidia-tls.so
+    - libnvidia-glsi.so
+    - libnvidia-opticalflow.so
+  # stuffs in our container that we want to transfer too
+  extra:
+    binaries:
+    - gpu-client
+    libraries:
+    - libcuda-control.so

@@ -1,20 +1,15 @@
 FROM ubuntu:18.04 AS builder
 
-RUN apt update
+RUN apt update && apt install -y curl build-essential apt-utils software-properties-common
 
 # install cuda toolkit
-RUN apt install -y apt-utils software-properties-common
-RUN add-apt-repository -y ppa:graphics-drivers/ppa
-RUN apt install -y nvidia-cuda-toolkit
+RUN add-apt-repository -y ppa:graphics-drivers/ppa && apt install -y nvidia-cuda-toolkit
 
-WORKDIR /build/go
+WORKDIR /build
 
 # install go 1.13
-RUN apt install -y curl build-essential
 RUN curl https://dl.google.com/go/go1.13.10.linux-amd64.tar.gz | tar xz
-RUN mv go /usr/local/go
-ENV GOPATH=/build/go/.go
-RUN ln -s /usr/local/go/bin/* /usr/local/bin/
+ENV GOROOT=/build/go/ GOPATH=/build/go/ PATH="/build/go/bin:${PATH}"
 
 WORKDIR /build/vcuda-controller
 

@@ -41,7 +41,47 @@ spec:
       # be rescheduled after a failure.
       # See https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
       priorityClassName: "system-node-critical"
+      hostNetwork: true
       hostPID: true
+      initContainers:
+      - image: "cos-nvidia-installer:fixed"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: nvidia-driver-installer
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        securityContext:
+          privileged: true
+          runAsUser: 0
+          runAsGroup: 0
+        env:
+        - name: NVIDIA_INSTALL_DIR_HOST
+          value: /home/kubernetes/bin/nvidia
+        - name: NVIDIA_INSTALL_DIR_CONTAINER
+          value: /usr/local/nvidia
+        - name: VULKAN_ICD_DIR_HOST
+          value: /home/kubernetes/bin/nvidia/vulkan/icd.d
+        - name: VULKAN_ICD_DIR_CONTAINER
+          value: /etc/vulkan/icd.d
+        - name: ROOT_MOUNT_DIR
+          value: /root
+        - name: COS_TOOLS_DIR_HOST
+          value: /var/lib/cos-tools
+        - name: COS_TOOLS_DIR_CONTAINER
+          value: /build/cos-tools
+        # use latest version
+        # - name: NVIDIA_DRIVER_VERSION
+        #   value: "440.64.00"
+        volumeMounts:
+        - name: nvidia-dir
+          mountPath: /usr/local/nvidia
+        - name: vulkan-icd-mount
+          mountPath: /etc/vulkan/icd.d
+        - name: dev-dir
+          mountPath: /dev
+        - name: root-mount
+          mountPath: /root
+        - name: cos-tools
+          mountPath: /build/cos-tools
       containers:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -57,15 +97,16 @@ spec:
           ldconfig
           &&
           gpu-manager
-          --extra-config=/etc/gpu-manager/config/extra-config.json
+          --extra-config=/home/kubernetes/bin/gpu-manager/config/extra-config.json
           --v=4
           --hostname-override=${NODE_NAME}
           --share-mode=true
-          --volume-config=/etc/gpu-manager/config/volume.conf
+          --volume-config=/home/kubernetes/bin/gpu-manager/config/volume.conf
           --log-dir=/var/log/gpu-manager
           --query-addr=0.0.0.0
           --incluster-mode=true
           --docker-endpoint=unix:////usr/local/run/docker.sock
+          --virtual-manager-path=/home/kubernetes/bin/gpu-manager/vm
         livenessProbe:
           tcpSocket:
             port: {{ .Values.service.internalPort }}
@@ -81,14 +122,14 @@ spec:
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
         volumeMounts:
         - name: gpu-manager-config
-          mountPath: /etc/gpu-manager/config
+          mountPath: /home/kubernetes/bin/gpu-manager/config
           readOnly: true
         - name: device-plugin
           mountPath: /var/lib/kubelet/device-plugins
         - name: vdriver
-          mountPath: /etc/gpu-manager/vdriver
+          mountPath: /home/kubernetes/bin/gpu-manager/vdriver
         - name: vmdata
-          mountPath: /etc/gpu-manager/vm
+          mountPath: /home/kubernetes/bin/gpu-manager/vm
         - name: log
           mountPath: /var/log/gpu-manager
         - name: run-dir
@@ -153,3 +194,13 @@ spec:
         hostPath:
           type: Directory
           path: /home/kubernetes/bin/nvidia/
+      - name: dev-dir
+        hostPath:
+          path: /dev
+      - name: root-mount
+        hostPath:
+          path: /
+      - name: cos-tools
+        hostPath:
+          # path: /var/lib/cos-tools # not executable
+          path: /home/kubernetes/bin/cos-tools

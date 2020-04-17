@@ -6,150 +6,40 @@ data:
   volume.conf: |-
     {
       "volume": [
-        {
-          "name": "nvidia",
-          "base": "/etc/gpu-manager/vdriver",
-          "mode": "ro",
-          "components": {
-            "binaries": [
-              "nvidia-cuda-mps-control",
-              "nvidia-cuda-mps-server",
-              "nvidia-debugdump",
-              "nvidia-persistenced",
-              "nvidia-smi",
-              "gpu-client"
-            ],
-            "libraries": [
-              "libnvidia-ml.so",
-              "libcuda.so",
-              "libcuda-control.so",
-              "libnvidia-ptxjitcompiler.so",
-              "libnvidia-fatbinaryloader.so",
-              "libnvidia-opencl.so",
-              "libnvidia-compiler.so",
-              "libvdpau_nvidia.so",
-              "libnvidia-encode.so",
-              "libnvcuvid.so",
-              "libnvidia-fbc.so",
-              "libnvidia-ifr.so",
-              "libGL.so",
-              "libGLX.so",
-              "libOpenGL.so",
-              "libGLESv1_CM.so",
-              "libGLESv2.so",
-              "libEGL.so",
-              "libGLdispatch.so",
-              "libGLX_nvidia.so",
-              "libEGL_nvidia.so",
-              "libGLESv2_nvidia.so",
-              "libGLESv1_CM_nvidia.so",
-              "libnvidia-eglcore.so",
-              "libnvidia-egl-wayland.so",
-              "libnvidia-glcore.so",
-              "libnvidia-tls.so",
-              "libnvidia-glsi.so",
-              "libnvidia-opticalflow.so"
-            ]
-          }
-        },
-        {
-          "name": "origin",
-          "base": "/etc/gpu-manager/vdriver",
-          "mode": "ro",
-          "components": {
-            "binaries": [
-              "nvidia-cuda-mps-control",
-              "nvidia-cuda-mps-server",
-              "nvidia-debugdump",
-              "nvidia-persistenced",
-              "nvidia-smi"
-            ],
-            "libraries": [
-              "libnvidia-ml.so",
-              "libcuda.so",
-              "libnvidia-ptxjitcompiler.so",
-              "libnvidia-fatbinaryloader.so",
-              "libnvidia-opencl.so",
-              "libnvidia-compiler.so",
-              "libvdpau_nvidia.so",
-              "libnvidia-encode.so",
-              "libnvcuvid.so",
-              "libnvidia-fbc.so",
-              "libnvidia-ifr.so",
-              "libGL.so",
-              "libGLX.so",
-              "libOpenGL.so",
-              "libGLESv1_CM.so",
-              "libGLESv2.so",
-              "libEGL.so",
-              "libGLdispatch.so",
-              "libGLX_nvidia.so",
-              "libEGL_nvidia.so",
-              "libGLESv2_nvidia.so",
-              "libGLESv1_CM_nvidia.so",
-              "libnvidia-eglcore.so",
-              "libnvidia-egl-wayland.so",
-              "libnvidia-glcore.so",
-              "libnvidia-tls.so",
-              "libnvidia-glsi.so",
-              "libnvidia-opticalflow.so"
-            ]
-          }
-        }
-      ]
-    }
-
-  volume.conf.old: |-
-    {
-      "volume": [
-      {{- $binaries := list "gpu-client" }}
-      {{- $libraries := list "libcuda-control.so" }}
-      {{- range $index, $package := .Values.nvidia.packages }}
-        {{- if $package.installed }}
-          {{- if $package.binaries }}
-            {{- range $index, $binary := $package.binaries -}}
-              {{- $binaries = append $binaries $binary }}
-            {{- end }}
-          {{- end }}
-          {{- if $package.libraries }}
-            {{- range $index, $library := $package.libraries -}}
-              {{- $libraries = append $libraries $library }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
-      {{- end }}
-        {
-          "name": "nvidia",
-          "base": "/etc/gpu-manager/vdriver",
-          "mode": "ro",
-          "components": {
-            "binaries": {{ $binaries | toPrettyJson | indent 12 | trim }},
-            "libraries": {{ $libraries | toPrettyJson | indent 12 | trim }}
-          }
-        },
       {{- $binaries := list }}
-      {{- $libraries := list }}
-      {{- range $index, $package := .Values.nvidia.packages }}
-        {{- if $package.installed }}
-          {{- if $package.binaries }}
-            {{- range $index, $binary := $package.binaries -}}
-              {{- $binaries = append $binaries $binary }}
-            {{- end }}
-          {{- end }}
-          {{- if $package.libraries }}
-            {{- range $index, $library := $package.libraries -}}
-              {{- $libraries = append $libraries $library }}
-            {{- end }}
-          {{- end }}
+      {{- if .Values.nvidia.extra.binaries }}
+        {{- range $index, binray := .Values.nvidia.extra.binaries }}
+          {{- $binaries = append $binaries $binary }}
         {{- end }}
+      {{- end }}}
+      {{- range $index, binary := .Values.nvidia.origin.binaries }}
+        {{- $binaries = append $binaries $binary }}
+      {{- end }}
+      {{- $libraries := list }}
+      {{- if .Values.nvidia.extra.libraries }}
+        {{- range $index, library := .Values.nvidia.extra.libraries }}
+          {{- $libraries = append $libraries $library }}
+        {{- end }}
+      {{- end }}}
+      {{- range $index, library := .Values.nvidia.origin.libraries }}
+        {{- $libraries = append $libraries $library }}
       {{- end }}
         {
-          "name": "origin",
-          "base": "/etc/gpu-manager/vdriver",
+          "name": "nvidia",
+          "base": "/home/kubernetes/bin/gpu-manager/vdriver",
           "mode": "ro",
           "components": {
             "binaries": {{ $binaries | toPrettyJson | indent 12 | trim }},
             "libraries": {{ $libraries | toPrettyJson | indent 12 | trim }}
+          }
+        },
+        {
+          "name": "origin",
+          "base": "/home/kubernetes/bin/gpu-manager/vdriver",
+          "mode": "ro",
+          "components": {
+            "binaries": {{ .Values.nvidia.origin.binaries | toPrettyJson | indent 12 | trim }},
+            "libraries": {{ .Values.nvidia.origin.libraries | toPrettyJson | indent 12 | trim }}
           }
         }
       ]
