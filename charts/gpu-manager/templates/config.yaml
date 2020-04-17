@@ -8,20 +8,20 @@ data:
       "volume": [
       {{- $binaries := list }}
       {{- if .Values.nvidia.extra.binaries }}
-        {{- range $index, binray := .Values.nvidia.extra.binaries }}
+        {{- range $index, $binary := .Values.nvidia.extra.binaries }}
           {{- $binaries = append $binaries $binary }}
         {{- end }}
       {{- end }}}
-      {{- range $index, binary := .Values.nvidia.origin.binaries }}
+      {{- range $index, $binary := .Values.nvidia.origin.binaries }}
         {{- $binaries = append $binaries $binary }}
       {{- end }}
       {{- $libraries := list }}
       {{- if .Values.nvidia.extra.libraries }}
-        {{- range $index, library := .Values.nvidia.extra.libraries }}
+        {{- range $index, $library := .Values.nvidia.extra.libraries }}
           {{- $libraries = append $libraries $library }}
         {{- end }}
       {{- end }}}
-      {{- range $index, library := .Values.nvidia.origin.libraries }}
+      {{- range $index, $library := .Values.nvidia.origin.libraries }}
         {{- $libraries = append $libraries $library }}
       {{- end }}
         {
