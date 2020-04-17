@@ -204,3 +204,6 @@ spec:
         hostPath:
           # path: /var/lib/cos-tools # not executable
           path: /home/kubernetes/bin/cos-tools
+      - name: vulkan-icd-mount
+        hostPath:
+          path: /home/kubernetes/bin/nvidia/vulkan/icd.d
