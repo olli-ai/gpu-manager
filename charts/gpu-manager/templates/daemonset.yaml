@@ -5,7 +5,11 @@ metadata:
   labels:
     draft: {{ default "draft-app" .Values.draft }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    app: gpu-manager
 spec:
+  selector:
+    matchLabels:
+      app: gpu-manager
   updateStrategy:
     type: RollingUpdate
   template:
@@ -98,7 +102,7 @@ spec:
           &&
           gpu-manager
           --extra-config=/home/kubernetes/bin/gpu-manager/config/extra-config.json
-          --v=4
+          --v=3
           --hostname-override=${NODE_NAME}
           --share-mode=true
           --volume-config=/home/kubernetes/bin/gpu-manager/config/volume.conf
@@ -107,6 +111,9 @@ spec:
           --incluster-mode=true
           --docker-endpoint=unix:////usr/local/run/docker.sock
           --virtual-manager-path=/home/kubernetes/bin/gpu-manager/vm
+        env:
+        - name: LOGGER_LEVEL
+          value: "8"
         livenessProbe:
           tcpSocket:
             port: {{ .Values.service.internalPort }}

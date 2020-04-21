@@ -11,7 +11,7 @@ data:
         {{- range $index, $binary := .Values.nvidia.extra.binaries }}
           {{- $binaries = append $binaries $binary }}
         {{- end }}
-      {{- end }}}
+      {{- end }}
       {{- range $index, $binary := .Values.nvidia.origin.binaries }}
         {{- $binaries = append $binaries $binary }}
       {{- end }}
@@ -20,7 +20,7 @@ data:
         {{- range $index, $library := .Values.nvidia.extra.libraries }}
           {{- $libraries = append $libraries $library }}
         {{- end }}
-      {{- end }}}
+      {{- end }}
       {{- range $index, $library := .Values.nvidia.origin.libraries }}
         {{- $libraries = append $libraries $library }}
       {{- end }}

@@ -41,7 +41,7 @@ ENV PATH="/usr/local/nvidia/bin:${PATH}"
 # copy libraries and binaries binaries
 COPY --from=builder \
 	/build/vcuda-controller/libcuda-control.so \
-	/usr/local/lib
+	/usr/local/lib/
 COPY --from=builder \
 	/build/vcuda-controller/nvml-monitor \
 	/build/gpu-manager/gpu-manager \
