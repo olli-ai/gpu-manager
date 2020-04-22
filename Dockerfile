@@ -29,15 +29,21 @@ RUN go mod download
 # compile
 COPY pkg ./pkg
 COPY cmd ./cmd
-RUN go build -gcflags=all="-N -l" -o gpu-manager tkestack.io/gpu-manager/cmd/manager
+RUN go build -o gpu-manager tkestack.io/gpu-manager/cmd/manager
 RUN go build -o gpu-client tkestack.io/gpu-manager/cmd/client
 
+FROM ubuntu:18.04
+
+# get ready to mount /usr/local/nvidia
 RUN echo "/usr/local/nvidia/lib64" > /etc/ld.so.conf.d/nvidia.conf
 ENV PATH="/usr/local/nvidia/bin:${PATH}"
 
-COPY /build/vcuda-controller/libcuda-control.so \
+# copy libraries and binaries binaries
+COPY --from=builder \
+	/build/vcuda-controller/libcuda-control.so \
 	/usr/local/lib/
-COPY /build/vcuda-controller/nvml-monitor \
+COPY --from=builder \
+	/build/vcuda-controller/nvml-monitor \
 	/build/gpu-manager/gpu-manager \
 	/build/gpu-manager/gpu-client \
 	/usr/local/bin/
