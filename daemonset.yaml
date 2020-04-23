@@ -124,7 +124,7 @@ spec:
     spec:
       # only run node hash gpu device
       nodeSelector:
-        cloud.google.com/gke-nodepool: gpu-1
+        gpu-manager: enabled
       tolerations:
       - key: nvidia.com/gpu
         operator: Equal

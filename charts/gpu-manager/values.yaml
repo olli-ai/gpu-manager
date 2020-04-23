@@ -23,7 +23,7 @@ service:
     #   nginx.ingress.kubernetes.io/auth-signin: https://auth.jenkins-x1.iviet.com/oauth2/start?rd=https%3A%2F%2F$http_host$escaped_request_uri
 
 nodeSelector:
-  cloud.google.com/gke-nodepool: gpu-1
+  gpu-manager: enabled
 podAnnotations:
   reloader.stakater.com/auto: "true"
 resources:

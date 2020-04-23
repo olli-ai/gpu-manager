@@ -27,7 +27,7 @@ spec:
     spec:
       # only run node hash gpu device
       nodeSelector:
-        nvidia-device-enable: enable
+{{ toYaml .Values.nodeSelector | indent 8 }}
       tolerations:
       - key: nvidia.com/gpu
         operator: Equal
@@ -52,7 +52,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: nvidia-driver-installer
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.resources | indent 10 }}
         securityContext:
           privileged: true
           runAsUser: 0
