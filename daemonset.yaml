@@ -1,3 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gpu-manager-config
+data:
+  volume.conf: |-
+    {
+      "volume": [
+        {
+          "name": "nvidia",
+          "base": "/home/kubernetes/bin/gpu-manager/vdriver",
+          "mode": "ro",
+          "components": {
+            "binaries": [
+              "gpu-client",
+              "nvidia-cuda-mps-control",
+              "nvidia-cuda-mps-server",
+              "nvidia-debugdump",
+              "nvidia-persistenced",
+              "nvidia-smi"
+            ],
+            "libraries": [
+              "libcuda-control.so",
+              "libnvidia-ml.so",
+              "libcuda.so",
+              "libnvidia-ptxjitcompiler.so",
+              "libnvidia-fatbinaryloader.so",
+              "libnvidia-opencl.so",
+              "libnvidia-compiler.so",
+              "libvdpau_nvidia.so",
+              "libnvidia-encode.so",
+              "libnvcuvid.so",
+              "libnvidia-fbc.so",
+              "libnvidia-ifr.so",
+              "libGL.so",
+              "libGLX.so",
+              "libOpenGL.so",
+              "libGLESv1_CM.so",
+              "libGLESv2.so",
+              "libEGL.so",
+              "libGLdispatch.so",
+              "libGLX_nvidia.so",
+              "libEGL_nvidia.so",
+              "libGLESv2_nvidia.so",
+              "libGLESv1_CM_nvidia.so",
+              "libnvidia-eglcore.so",
+              "libnvidia-egl-wayland.so",
+              "libnvidia-glcore.so",
+              "libnvidia-tls.so",
+              "libnvidia-glsi.so",
+              "libnvidia-opticalflow.so"
+            ]
+          }
+        },
+        {
+          "name": "origin",
+          "base": "/home/kubernetes/bin/gpu-manager/vdriver",
+          "mode": "ro",
+          "components": {
+            "binaries": [
+              "nvidia-cuda-mps-control",
+              "nvidia-cuda-mps-server",
+              "nvidia-debugdump",
+              "nvidia-persistenced",
+              "nvidia-smi"
+            ],
+            "libraries": [
+              "libnvidia-ml.so",
+              "libcuda.so",
+              "libnvidia-ptxjitcompiler.so",
+              "libnvidia-fatbinaryloader.so",
+              "libnvidia-opencl.so",
+              "libnvidia-compiler.so",
+              "libvdpau_nvidia.so",
+              "libnvidia-encode.so",
+              "libnvcuvid.so",
+              "libnvidia-fbc.so",
+              "libnvidia-ifr.so",
+              "libGL.so",
+              "libGLX.so",
+              "libOpenGL.so",
+              "libGLESv1_CM.so",
+              "libGLESv2.so",
+              "libEGL.so",
+              "libGLdispatch.so",
+              "libGLX_nvidia.so",
+              "libEGL_nvidia.so",
+              "libGLESv2_nvidia.so",
+              "libGLESv1_CM_nvidia.so",
+              "libnvidia-eglcore.so",
+              "libnvidia-egl-wayland.so",
+              "libnvidia-glcore.so",
+              "libnvidia-tls.so",
+              "libnvidia-glsi.so",
+              "libnvidia-opticalflow.so"
+            ]
+          }
+        }
+      ]
+    }
+
+  extra-config.json: "{}"
+---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
