@@ -1,115 +1,46 @@
 # GPU Manager
 
-[![Build Status](https://travis-ci.org/tkestack/gpu-manager.svg?branch=master)](https://travis-ci.org/tkestack/gpu-manager)
+This is a fork from https://github.com/tkestack/gpu-manager to be deployed with Jenkins-X. The dockerfile has been totally changed for a clearer deployment.
 
-GPU Manager is used for managing the nvidia GPU devices in Kubernetes cluster. It implements the `DevicePlugin` interface
-of Kubernetes. So it's compatible with 1.9+ of Kubernetes release version. 
+All the changes are related to the way it is deployed.
 
-To compare with the combination solution of `nvidia-docker`
-and `nvidia-k8s-plugin`, GPU manager will use native `runc` without modification but nvidia solution does.
-Besides we also support metrics report without deploying new components. 
+Only the nodes matching [`nodeSelector`](./charts/gpu-manager/values.yaml) are affected.
 
-To schedule a GPU payload correctly, GPU manager should work with [gpu-admission](https://github.com/tkestack/gpu-admission) which is a
- kubernetes scheduler plugin.
+`gpu-manager` creates a device plugin on each node for the `tencent.com/vcuda-core` and `tencent.com/vcuda-memory` resources. It requires NVidia drivers to be installed on the node, using [GKE's `nvidia-driver-installer`](https://raw.githubusercontent.com/GoogleCloudPlatform/container-engine-accelerators/master/nvidia-driver-installer/cos/daemonset-preloaded.yaml) as init-container. It will then mount cuda libraries in the containers to make them available. `libcuda` and `libnvidia-ml` libraries are replaced by [`libcuda-controller`](https://github.com/olli-ai/vcuda-controller) in order to ensure memory and GPU limits. It expects pods to have been scheduled by [`gpu-admission`](https://github.com/olli-ai/gpu-admission).
 
-GPU manager also supports the payload with fraction resource of GPU device such as 0.1 card or 100MiB gpu device memory.
-If you want this kind feature, please refer to [vcuda-controller](https://github.com/tkestack/vcuda-controller) project.
+`gpu-client` is called by [`libcuda-controller`](https://github.com/olli-ai/vcuda-controller), and will request `gpu-manager` to create the configuration files in `/etc/nvidia`. Those configuration files are used to limit memory and GPU.
 
-## Build
+## How to deploy a cuda pod
 
-**1.** Build binary
+Docker images must NOT include the cuda libraries. Those will be mounted by `gpu-manager`. Containers that intend to use cuda must defines the requests and limites `tencent.com/vcuda-core` and `tencent.com/vcuda-memory`:
+- `tencent.com/vcuda-core` is the percentage of GPU usage required (maximum 100%). A typical tensorflow exemple does not seem to use more than 20%
+- `tencent.com/vcuda-memory` is the number of 256MB pages of GPU memory requested. A Testla T4 GPU seems to provide 58 pages.
 
-- Prerequisite
-   - CUDA toolkit
-    
-```
-make
-```
-
-**2.** Build image
-
-- Prerequisite
-    - Docker
-
-```
-make img
-```
-
-## Deploy
-
-GPU Manager is running as daemonset, and because of the RABC restriction and hydrid cluster,
-you need to do the following steps to make this daemonset run correctly.
-
-- service account and clusterrole
-
-```
-kubectl create sa gpu-manager -n kube-system
-kubectl create clusterrolebinding gpu-manager-role --clusterrole=cluster-admin --serviceaccount=kube-system:gpu-manager
-```
-
-- label node with `nvidia-device-enable=enable`
-
-```
-kubectl label node <node> nvidia-device-enable=enable
-```
-
-## Pod template example
-
-There is nothing special to submit a Pod except the description of GPU resource is no longer 1
-. The GPU
-resources are described as that 100 `tencent.com/vcuda-core` for 1 GPU and N `tencent.com/vcuda
--memory` for GPU memory (1 tencent.com/vcuda-memory means 256Mi
-GPU memory). And because of the limitation of extend resource validation of Kubernetes, to support
-GPU utilization limitation, you should add `tencent.com/vcuda-core-limit: XX` in the annotation
- field of a Pod.
- 
- **Notice: the value of `tencent.com/vcuda-core` is either the multiple of 100 or any value
-smaller than 100.For example, 100, 200 or 20 is valid value but 150 or 250 is invalid**
-
-- Submit a Pod with 0.3 GPU utilization and 7680MiB GPU memory with 0.5 GPU utilization limit
-
-```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: vcuda
-  annotation:
-    tencent.com/vcuda-core-limit: 50
-spec:
-  restartPolicy: Never
-  hostNetwork: true
-  containers:
-  - image: <test-image>
-    name: nvidia
-    command: ['/usr/local/nvidia/bin/nvidia-smi']
+```yaml
     resources:
       requests:
-        tencent.com/vcuda-core: 50
-        tencent.com/vcuda-memory: 30
+        cpu: 700m
+        memory: 2Gi
+        tencent.com/vcuda-core: 20
+        tencent.com/vcuda-memory: 10
       limits:
-        tencent.com/vcuda-core: 50
-        tencent.com/vcuda-memory: 30
+        cpu: 700m
+        memory: 2Gi
+        tencent.com/vcuda-core: 20
+        tencent.com/vcuda-memory: 10
 ```
 
-- Submit a Pod with 2 GPU card
+In order to be scheduled by [`gpu-admission`](https://github.com/olli-ai/gpu-admission), pods must include a `schedulerName`, and `tolerations` to run on GPU servers.
 
+```yaml
+  schedulerName: gpu-scheduler
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Equal
+    value: present
+    effect: NoSchedule
 ```
-apiVersion: v1
-kind: Pod
-metadata:
-  name: vcuda
-spec:
-  restartPolicy: Never
-  hostNetwork: true
-  containers:
-  - image: <test-image>
-    name: nvidia
-    command: ['/usr/local/nvidia/bin/nvidia-smi']
-    resources:
-      requests:
-        tencent.com/vcuda-core: 200
-        tencent.com/vcuda-memory: 60
-      limits:
-        tencent.com/vcuda-core: 200
-        tencent.com/vcuda-memory: 60
-```
+
+Some examples:
+- [`tensorflow.yaml`](./tensorflow.yaml)
+- [`tensorflow-dep.yaml`](./tensorflow-dep.yaml)

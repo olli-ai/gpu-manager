@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tensorflow
+  namespace: test
+data:
+  script.py: |-
+    import time
+    from datetime import datetime
+    import tensorflow as tf
+    from tensorflow import keras
+
+    print ('begin', datetime.utcnow())
+
+    fashion_mnist = keras.datasets.fashion_mnist
+
+    (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
+
+    train_images = train_images / 255.0
+
+    test_images = test_images / 255.0
+
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=(28, 28)),
+        keras.layers.Dense(1024, activation='relu'),
+        keras.layers.Dense(1024, activation='relu'),
+        keras.layers.Dense(1024, activation='relu'),
+        keras.layers.Dense(10)
+    ])
+
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+
+    model.fit(train_images, train_labels, epochs=100)
+
+    test_loss, test_acc = model.evaluate(test_images,  test_labels, verbose=2)
+
+    print('\nTest accuracy:', test_acc)
+
+    print ('end', datetime.utcnow())
+
+    time.sleep(100000)
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tensorflow
+  namespace: test
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      dep: tensorflow
+  template:
+    metadata:
+      name: tensorflow
+      namespace: test
+      labels:
+        dep: tensorflow
+    spec:
+      schedulerName: gpu-scheduler
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Equal
+        value: present
+        effect: NoSchedule
+      containers:
+      - name: tensorflow
+        image: tensorflow/tensorflow:2.2.0rc3-gpu
+        command:
+        - python
+        - /mnt/tensorflow/script.py
+        resources:
+          requests:
+            cpu: 700m
+            memory: 2Gi
+            tencent.com/vcuda-core: 20
+            tencent.com/vcuda-memory: 10
+          limits:
+            cpu: 700m
+            memory: 2Gi
+            tencent.com/vcuda-core: 20
+            tencent.com/vcuda-memory: 10
+        volumeMounts:
+        - name: tensorflow
+          mountPath: /mnt/tensorflow
+          readOnly: true
+      volumes:
+      - name: tensorflow
+        configMap:
+          name: tensorflow
+
