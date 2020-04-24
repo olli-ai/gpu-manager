@@ -199,18 +199,22 @@ spec:
         # problem for different distro
       - name: nvidia-dir
         hostPath:
-          type: Directory
+          type: DirectoryOrCreate
           path: /home/kubernetes/bin/nvidia/
       - name: dev-dir
         hostPath:
+          type: Directory
           path: /dev
       - name: root-mount
         hostPath:
+          type: Directory
           path: /
       - name: cos-tools
         hostPath:
+          type: DirectoryOrCreate
           # path: /var/lib/cos-tools # not executable
           path: /home/kubernetes/bin/cos-tools
       - name: vulkan-icd-mount
         hostPath:
+          type: DirectoryOrCreate
           path: /home/kubernetes/bin/nvidia/vulkan/icd.d
