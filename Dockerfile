@@ -29,8 +29,8 @@ RUN go mod download
 # compile
 COPY pkg ./pkg
 COPY cmd ./cmd
-RUN go build -o gpu-manager tkestack.io/gpu-manager/cmd/manager
-RUN go build -o gpu-client tkestack.io/gpu-manager/cmd/client
+RUN go build -gcflags=all="-N -l" -o gpu-manager tkestack.io/gpu-manager/cmd/manager
+RUN go build -gcflags=all="-N -l" -o gpu-client tkestack.io/gpu-manager/cmd/client
 
 FROM ubuntu:18.04
 
