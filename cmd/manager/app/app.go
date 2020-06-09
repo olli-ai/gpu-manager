@@ -35,6 +35,8 @@ import (
 	pluginapi "k8s.io/kubernetes/pkg/kubelet/apis/deviceplugin/v1beta1"
 )
 
+const MAX_RETRIES = 100
+
 // #lizard forgives
 func Run(opt *options.Options) error {
 	cfg := &config.Config{
@@ -83,13 +85,13 @@ func Run(opt *options.Options) error {
 	go srv.Run()
 
 	retries := 0
-	for !srv.Ready() && retries < 10 {
+	for !srv.Ready() && retries < MAX_RETRIES {
 		glog.Infof("Wait for internal server ready")
 		time.Sleep(time.Second)
 		retries++
 	}
 
-	if retries == 10 {
+	if retries == MAX_RETRIES {
 		glog.Warningf("Wait too long for server ready, restarting")
 		os.Exit(1)
 	}
